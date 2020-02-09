@@ -13,17 +13,21 @@
 <hr>
 <h2>Meals</h2>
 
-<jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
+<%--<jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>--%>
 <c:if test="${!empty meals}">
     <table class="tg">
         <tr>
+            <th width="80" >ID</th>
             <th width="220">Дата/время</th>
             <th width="520">Описание</th>
             <th width="80">Калории</th>
+            <th width="60">Edit</th>
+            <th width="60">Delete</th>
         </tr>
 
         <c:forEach items="${meals}" var="meal">
-            <tr bgcolor="${meal.excess ? 'greenyellow' : 'red'}">
+            <tr bgcolor="${meal.excess ? 'red' : 'greenyellow'}">
+                <td>${meal.id}</td>
                 <td>
                     <fmt:parseDate value="${ meal.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime"
                                    type="both"/>
@@ -31,10 +35,13 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
+                <td><a href="meals?action=edit&id=<c:out value="${meal.id}"/>">Edit</a></td>
+                <td><a href="meals?action=delete&id=<c:out value="${meal.id}"/>">Delete</a></td>
             </tr>
         </c:forEach>
     </table>
 </c:if>
-
+<br/>
+<p><a href="meals?action=insert">Add Meal</a></p>
 </body>
 </html>
