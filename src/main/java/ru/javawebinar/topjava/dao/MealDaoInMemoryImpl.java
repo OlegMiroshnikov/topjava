@@ -1,58 +1,66 @@
 package ru.javawebinar.topjava.dao;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MealDaoInMemoryImpl implements MealDao {
 
-    private static List<Meal> meals;
+    private Map<Integer, Meal> meals;
+    private volatile int maxId = 0;
 
     public MealDaoInMemoryImpl() {
-        this.meals = MealsUtil.createList();
+        this.meals = createMap();
+        this.maxId = Collections.max(meals.keySet());
+    }
+
+    private synchronized int getNextId() {
+        maxId++;
+        return maxId;
+    }
+
+    private Map<Integer, Meal> createMap() {
+        Map<Integer, Meal> map = new ConcurrentHashMap<>();
+        map.put(1, new Meal(1, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        map.put(2, new Meal(2, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        map.put(3, new Meal(3, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        map.put(4, new Meal(4, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        map.put(5, new Meal(5, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        map.put(6, new Meal(6, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        map.put(7, new Meal(7, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        return map;
     }
 
     @Override
     public List<Meal> getAll() {
-        return this.meals;
+        return new ArrayList<>(meals.values());
     }
 
     @Override
-    public void addMeal(Meal meal) {
-        Integer maxId = meals.stream()
-                .mapToInt(m->m.getId())
-                .max()
-                .orElse(0);
-        meal.setId(new AtomicInteger(maxId).incrementAndGet());
-        meals.add(meal);
+    public void add(Meal meal) {
+        int id = getNextId();
+        meal.setId(id);
+        meals.put(id, meal);
     }
 
     @Override
-    public Optional<Meal> getMealById(int id) {
-        return meals.stream()
-                .filter(m->m.getId() == id)
-                .findFirst();
+    public Meal getById(int id) {
+        return meals.get(id);
     }
 
     @Override
-    public void updateMeal(Meal meal) {
-        Optional<Meal> optionalMeal = getMealById(meal.getId());
-        if (optionalMeal.isPresent()) {
-            Meal editMeal = optionalMeal.get();
-            editMeal.setDateTime(meal.getDateTime());
-            editMeal.setDescription(meal.getDescription());
-            editMeal.setCalories(meal.getCalories());
-        }
+    public void update(Meal meal) {
+        meals.replace(meal.getId(), meal);
     }
 
     @Override
-    public void removeMeal(int id) {
-        meals.stream()
-                .filter(m -> m.getId() == id)
-                .findFirst()
-                .ifPresent(m -> meals.remove(m));
+    public void remove(int id) {
+        meals.remove(id);
     }
 }
