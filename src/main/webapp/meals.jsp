@@ -13,21 +13,18 @@
 <hr>
 <h2>Meals</h2>
 
-<%--<jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>--%>
+<jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
 <c:if test="${!empty meals}">
     <table class="tg">
         <tr>
-            <th width="80" >ID</th>
             <th width="220">Дата/время</th>
             <th width="520">Описание</th>
             <th width="80">Калории</th>
             <th width="60">Edit</th>
             <th width="60">Delete</th>
         </tr>
-
         <c:forEach items="${meals}" var="meal">
             <tr bgcolor="${meal.excess ? 'red' : 'greenyellow'}">
-                <td>${meal.id}</td>
                 <td>
                     <fmt:parseDate value="${ meal.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime"
                                    type="both"/>
