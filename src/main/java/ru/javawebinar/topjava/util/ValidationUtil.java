@@ -1,13 +1,7 @@
 package ru.javawebinar.topjava.util;
 
-
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class ValidationUtil {
 
@@ -44,25 +38,5 @@ public class ValidationUtil {
         } else if (entity.getId() != id) {
             throw new IllegalArgumentException(entity + " must be with id=" + id);
         }
-    }
-
-    public static boolean isValidDate(LocalDate localDate) {
-        try {
-            String formattedDate = localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalDate date = LocalDate.parse(formattedDate);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(localDate + " is not valid");
-        }
-        return true;
-    }
-
-    public static boolean isValidTime(LocalTime localTime) {
-        try {
-            String formattedTime = localTime.format(DateTimeFormatter.ofPattern("HH:mm"));
-            LocalTime time = LocalTime.parse(formattedTime);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(localTime + " is not valid");
-        }
-        return true;
     }
 }

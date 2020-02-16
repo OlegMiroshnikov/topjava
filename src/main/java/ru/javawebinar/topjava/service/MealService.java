@@ -34,8 +34,12 @@ public class MealService {
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
-    public List<Meal> getAll(Integer userId, Predicate<Meal> filter) {
-        return repository.getAll(userId, filter);
+    public List<Meal> getAll(Integer userId) {
+        return repository.getAll(userId);
+    }
+
+    public List<Meal> getAllByFilter(Integer userId, Predicate<Meal> filter) {
+        return repository.getAllbyFilter(userId, filter);
     }
 
 }

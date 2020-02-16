@@ -13,23 +13,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
+
 
     private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-        System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
-//        AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
-        controller = appCtx.getBean(MealRestController.class);
+        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");) {
+            controller = appCtx.getBean(MealRestController.class);
+        }
     }
 
     @Override
@@ -39,7 +40,7 @@ public class MealServlet extends HttpServlet {
         String id = request.getParameter("id");
 
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                SecurityUtil.authUserId(),
+                null,
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
@@ -57,7 +58,6 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws
             ServletException, IOException {
         String action = request.getParameter("action");
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
@@ -73,6 +73,15 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "filter":
+                log.info("filter");
+                getFilter(request);
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            case "clear":
+                log.info("clear");
+                response.sendRedirect("meals");
+                break;
             case "all":
             default:
                 log.info("getAll");
@@ -85,5 +94,25 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private void getFilter(HttpServletRequest request) {
+        LocalDate startDate = request.getParameter("startDate").isEmpty() ?
+                LocalDate.MIN :
+                LocalDate.parse(request.getParameter("startDate"));
+        LocalDate endDate = request.getParameter("endDate").isEmpty() ?
+                LocalDate.MAX :
+                LocalDate.parse(request.getParameter("endDate"));
+        LocalTime startTime = request.getParameter("startTime").isEmpty() ?
+                LocalTime.MIN :
+                LocalTime.parse(request.getParameter("startTime"));
+        LocalTime endTime = request.getParameter("endTime").isEmpty() ?
+                LocalTime.MAX :
+                LocalTime.parse(request.getParameter("endTime"));
+        request.setAttribute("startDate", startDate != LocalDate.MIN ? startDate : "");
+        request.setAttribute("endDate", endDate != LocalDate.MAX ? endDate : "");
+        request.setAttribute("startTime", startTime != LocalTime.MIN ? startTime : "");
+        request.setAttribute("endTime", endTime != LocalTime.MAX ? endTime : "");
+        request.setAttribute("meals", controller.getByDateTime(startDate, endDate, startTime, endTime));
     }
 }

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.UsersUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -14,18 +14,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.*;
 
 @Repository
 public class InMemoryUserRepository implements UserRepository {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
+    private static final Logger log = getLogger(InMemoryUserRepository.class);
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
     public InMemoryUserRepository() {
-        MealsUtil.USERS.forEach(user -> {
-            user.setId(counter.incrementAndGet());
-            repository.put(user.getId(), user);
-        });
+        UsersUtil.USERS.forEach(user -> this.save(user));
     }
 
     @Override
@@ -63,9 +61,8 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return repository.entrySet().stream()
-                .filter(e -> e.getValue().getEmail().equalsIgnoreCase(email))
-                .map(e -> repository.get(e.getValue().getId()))
+        return repository.values().stream()
+                .filter(user -> user.getEmail().equalsIgnoreCase(email))
                 .findFirst()
                 .orElse(null);
     }

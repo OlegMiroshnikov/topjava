@@ -15,5 +15,7 @@ public interface MealRepository {
     // null if not found
     Meal get(int id, Integer userId);
 
-    List<Meal> getAll(Integer userId, Predicate<Meal> filter);
+    List<Meal> getAll(Integer userId);
+
+    List<Meal> getAllbyFilter(Integer userId, Predicate<Meal> filter);
 }

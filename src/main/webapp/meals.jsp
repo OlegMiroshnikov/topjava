@@ -14,6 +14,24 @@
         .excess {
             color: red;
         }
+
+        dl {
+            background: none repeat scroll 0 0 #FAFAFA;
+            margin: 8px 0;
+            padding: 0;
+        }
+
+        dt {
+            display: inline-block;
+            width: 170px;
+        }
+
+        dd {
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: top;
+        }
+
     </style>
 </head>
 <body>
@@ -49,6 +67,28 @@
             </tr>
         </c:forEach>
     </table>
+</section>
+<section>
+    <form method="get" action="meals">
+        <dl>
+            <dt>От даты:</dt>
+            <dd><input type="datetime-local" value="${startDate}" name="startDate"></dd>
+        </dl>
+        <dl>
+            <dt>До даты:</dt>
+            <dd><input type="datetime-local" value="${endDate}" name="endDate"></dd>
+        </dl>
+        <dl>
+            <dt>От времени:</dt>
+            <dd><input type="time" value="${startTime}" name="startTime"></dd>
+        </dl>
+        <dl>
+            <dt>До времени:</dt>
+            <dd><input type="time" value="${endTime}" name="endTime"></dd>
+        </dl>
+        <button type="submit" name="action" value="filter">Отфильтровать</button>
+        <button type="submit" name="action" value="clear">Отменить</button>
+    </form>
 </section>
 </body>
 </html>
