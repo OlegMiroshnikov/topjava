@@ -35,7 +35,7 @@ public abstract class AbstractBaseEntity {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
-**            return false;
+            return false;
         }
         AbstractBaseEntity that = (AbstractBaseEntity) o;
         return id != null && id.equals(that.id);
