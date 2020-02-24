@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.UserTestData;
@@ -17,11 +16,10 @@ import java.util.Collection;
 
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
-@ContextConfiguration({"classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml",
+
+@ContextConfiguration({
         "classpath:spring/test-spring-app.xml"
 })
-
 
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
@@ -30,7 +28,6 @@ public class InMemoryAdminRestControllerSpringTest {
     private AdminRestController controller;
 
     @Autowired
-    @Qualifier("inMemoryUserRepository")
     private InMemoryUserRepository repository;
 
     @Before
@@ -40,7 +37,7 @@ public class InMemoryAdminRestControllerSpringTest {
 
     @Test
     public void delete() throws Exception {
-        controller.delete(UserTestData.USER_ID);
+        controller.delete(UserTestData.USER1_ID);
         Collection<User> users = controller.getAll();
         Assert.assertEquals(1, users.size());
         Assert.assertEquals(ADMIN, users.iterator().next());

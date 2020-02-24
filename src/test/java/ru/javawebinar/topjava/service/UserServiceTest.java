@@ -44,8 +44,8 @@ public class UserServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void delete() throws Exception {
-        service.delete(USER_ID);
-        service.get(USER_ID);
+        service.delete(USER1_ID);
+        service.get(USER1_ID);
     }
 
     @Test(expected = NotFoundException.class)
@@ -55,8 +55,8 @@ public class UserServiceTest {
 
     @Test
     public void get() throws Exception {
-        User user = service.get(USER_ID);
-        assertMatch(user, USER);
+        User user = service.get(USER1_ID);
+        assertMatch(user, USER1);
     }
 
     @Test(expected = NotFoundException.class)
@@ -66,20 +66,20 @@ public class UserServiceTest {
 
     @Test
     public void getByEmail() throws Exception {
-        User user = service.getByEmail("user@yandex.ru");
-        assertMatch(user, USER);
+        User user = service.getByEmail("user1@yandex.ru");
+        assertMatch(user, USER1);
     }
 
     @Test
     public void update() throws Exception {
         User updated = getUpdated();
         service.update(updated);
-        assertMatch(service.get(USER_ID), updated);
+        assertMatch(service.get(USER1_ID), updated);
     }
 
     @Test
     public void getAll() throws Exception {
         List<User> all = service.getAll();
-        assertMatch(all, ADMIN, USER);
+        assertMatch(all, ADMIN, USER1, USER2);
     }
 }
