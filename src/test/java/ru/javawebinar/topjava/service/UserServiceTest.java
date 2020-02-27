@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
@@ -26,6 +28,8 @@ public class UserServiceTest {
 
     @Autowired
     private UserService service;
+    @Autowired
+    private UserRepository repository;
 
     @Test
     public void create() throws Exception {
@@ -42,10 +46,9 @@ public class UserServiceTest {
         service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER));
     }
 
-    @Test(expected = NotFoundException.class)
     public void delete() throws Exception {
         service.delete(USER_ID);
-        service.get(USER_ID);
+        Assert.assertNull(repository.get(USER_ID));
     }
 
     @Test(expected = NotFoundException.class)
