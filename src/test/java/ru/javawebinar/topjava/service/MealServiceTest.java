@@ -47,9 +47,9 @@ public class MealServiceTest {
 
 
     public static class AllTestExecutionTime extends TestWatcher {
-        Map<String, Integer> testsExecutionTime = new HashMap<>();
+        Map<String, Long> testsExecutionTime = new HashMap<>();
 
-        public void addTestTime(String test, Integer time) {
+        public void addTestTime(String test, Long time) {
             testsExecutionTime.put(test, time);
         }
 
@@ -60,18 +60,18 @@ public class MealServiceTest {
     }
 
     public class TestExecutionTime extends TestWatcher {
-        LocalTime startTimeTest;
-        LocalTime endTimeTest;
+        long startTimeTest;
+        long endTimeTest;
 
         @Override
         protected void starting(Description description) {
-            startTimeTest = LocalTime.now();
+            startTimeTest = System.nanoTime();
         }
 
         @Override
         protected void finished(Description description) {
-            endTimeTest = LocalTime.now();
-            Integer testDuration = Duration.between(endTimeTest, startTimeTest).getNano();
+            endTimeTest = System.nanoTime();
+            long testDuration = endTimeTest - startTimeTest;
             log.info("{}: duration of the test = {} ns", description.getMethodName(), testDuration);
             allTestExecutionTime.addTestTime(description.getMethodName(), testDuration);
         }
@@ -100,7 +100,7 @@ public class MealServiceTest {
     @Test
     public void deleteNotOwn() throws Exception {
         thrown.expect(NotFoundException.class);
-        thrown.expectMessage(is("Not found entity with id=100002"));
+        thrown.expectMessage(is("Not found entity with id="+ MEAL1_ID));
         service.delete(MEAL1_ID, ADMIN_ID);
     }
 
@@ -130,7 +130,7 @@ public class MealServiceTest {
     @Test
     public void getNotOwn() throws Exception {
         thrown.expect(NotFoundException.class);
-        thrown.expectMessage(is("Not found entity with id=100002"));
+        thrown.expectMessage(is("Not found entity with id="+ MEAL1_ID));
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -144,7 +144,7 @@ public class MealServiceTest {
     @Test
     public void updateNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
-        thrown.expectMessage(is("Not found entity with id=100002"));
+        thrown.expectMessage(is("Not found entity with id="+ MEAL1_ID));
         service.update(MEAL1, ADMIN_ID);
     }
 
