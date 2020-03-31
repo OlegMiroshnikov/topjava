@@ -8,17 +8,21 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.MealToTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
+import static ru.javawebinar.topjava.TestUtil.readListFromJsonMvcResult;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 class MealRestControllerTest extends AbstractControllerTest {
@@ -34,7 +38,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(MEALS_TO));
+                .andExpect(result -> assertThat(readListFromJsonMvcResult(result, MealTo.class))
+                        .usingFieldByFieldElementComparator().isEqualTo(MEALS_TO));
     }
 
     @Test
@@ -83,11 +88,12 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "by?" +
-                "startDate=2020-01-30T08:00:00&startTime=2020-01-30T08:00:00&" +
-                "endDate=2020-01-30T23:00:00&endTime=2020-01-30T23:00:00"))
+                "startDateTime=2020-01-30T08:00:00&" +
+                "endDateTime=2020-01-30T23:00:00"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(MEAL3_TO, MEAL2_TO, MEAL1_TO));
+                .andExpect(result -> assertThat(readListFromJsonMvcResult(result, MealTo.class))
+                        .usingFieldByFieldElementComparator().isEqualTo(List.of(MEAL3_TO, MEAL2_TO, MEAL1_TO)));
     }
 }
