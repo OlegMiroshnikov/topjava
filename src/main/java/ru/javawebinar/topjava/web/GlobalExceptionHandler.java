@@ -23,7 +23,9 @@ public class GlobalExceptionHandler {
 
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ModelAndView mav = new ModelAndView("exception",
-                Map.of("exception", rootCause, "message", rootCause.toString(), "status", httpStatus));
+                Map.of("exception", rootCause,
+                        "message", e.getClass().getSimpleName().equals("DataIntegrityViolationException") ? "User with this email already exists" : rootCause.toString(),
+                        "status", httpStatus));
         mav.setStatus(httpStatus);
 
         // Interceptor is not invoked, put userTo
